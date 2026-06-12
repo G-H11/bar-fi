@@ -1,90 +1,128 @@
 "use client";
 
-import Image from "next/image";
 import Link from "next/link";
-import { Address } from "@scaffold-ui/components";
 import type { NextPage } from "next";
 import { useAccount } from "wagmi";
-import { BugAntIcon, MagnifyingGlassIcon } from "@heroicons/react/24/outline";
-import { useTargetNetwork } from "~~/hooks/scaffold-eth";
+import { useScaffoldReadContract } from "~~/hooks/scaffold-eth";
+import HeroSection from "~~/components/HeroSection";
 
 const Home: NextPage = () => {
-  const { address: connectedAddress } = useAccount();
-  const { targetNetwork } = useTargetNetwork();
+  const { address: connectedAddress, isConnected } = useAccount();
+
+  const { data: totalSupply } = useScaffoldReadContract({
+    contractName: "YourCollectible", functionName: "tokenIdCounter", watch: true,
+  });
+
+  const { data: listedCount } = useScaffoldReadContract({
+    contractName: "YourCollectible", functionName: "getListedItemsCount", watch: true,
+  });
+
+  const displayTotal = totalSupply !== undefined ? Number(totalSupply) : "—";
+  const displayListed = listedCount !== undefined ? Number(listedCount) : "—";
 
   return (
-    <>
-      <div className="flex items-center flex-col grow pt-10">
-        <div className="px-5">
-          <h1 className="text-center">
-            <span className="block text-2xl mb-2">Welcome to</span>
-            <span className="block text-4xl font-bold">Scaffold-ETH 2</span>
-            <span className="block text-xl font-bold">(Speedrun Ethereum Challenge: Tokenization extension)</span>
-          </h1>
-          <div className="flex justify-center items-center space-x-2 flex-col">
-            <p className="my-2 font-medium">Connected Address:</p>
-            <Address address={connectedAddress} chain={targetNetwork} />
-          </div>
+    <div className="flex items-center flex-col grow">
+      {/* Hero Section */}
+      <HeroSection
+        bgImage="/hero-bg.png"
+        emoji="🍸"
+        title="BarFi"
+        subtitle="NFT 吧台 · 酒藏"
+        description="欢迎来到 BarFi——融合酒文化与NFT的数字资产交易平台。发行你的珍酿，上架吧台交易，品味链上酒藏的独特魅力。"
+      >
+        <div className="flex justify-center">
+          <Link href="/BuyNft" className="btn btn-lg px-12 text-base font-bold shadow-lg"
+            style={{ background: "linear-gradient(135deg, #c8f5ff, #89d7e9)", color: "#026262", border: "none" }}>
+            🥂 进入吧台
+          </Link>
+        </div>
+      </HeroSection>
 
-          <div className="flex items-center flex-col flex-grow mt-4">
-            <div className="px-5 w-[90%]">
-              <h1 className="text-center mb-6">
-                <span className="block text-4xl font-bold">Challenge: Tokenization</span>
-              </h1>
-              <div className="flex flex-col items-center justify-center">
-                <Image
-                  src="/hero.png"
-                  width="727"
-                  height="231"
-                  alt="challenge banner"
-                  className="rounded-xl border-4 border-primary"
-                />
-                <div className="max-w-3xl">
-                  <p className="text-center text-lg mt-8">
-                    🎫 Create a unique token to learn the basics of 🏗️ Scaffold-ETH 2. You'll compile and deploy smart
-                    contracts. Then, you'll use a template React app full of important Ethereum components and hooks.
-                    Finally, you'll deploy an NFT to a public network to share with friends! 🚀
-                  </p>
-                  <p className="text-center text-lg">
-                    🌟 The final deliverable is an app that lets users purchase and transfer NFTs. Deploy your contracts
-                    to a testnet then build and upload your app to a public web server. Submit the url on{" "}
-                    <a href="https://speedrunethereum.com/" target="_blank" rel="noreferrer" className="underline">
-                      SpeedRunEthereum.com
-                    </a>{" "}
-                    !
-                  </p>
-                </div>
-              </div>
+      {/* Stats Bar */}
+      <div className="flex flex-wrap gap-4 justify-center -mt-8 mb-12 w-[92%] max-w-3xl relative z-10">
+        <div className="stat rounded-xl flex-1 min-w-[130px] shadow-lg" style={{ background: "var(--color-base-100)", border: "1px solid var(--color-accent)" }}>
+          <div className="stat-figure text-2xl">🏷️</div>
+          <div className="stat-title text-xs tracking-wider uppercase" style={{ color: "#ffd966" }}>总发行量</div>
+          <div className="stat-value text-3xl" style={{ color: "var(--color-accent)" }}>{displayTotal}</div>
+        </div>
+        <div className="stat rounded-xl flex-1 min-w-[130px] shadow-lg" style={{ background: "var(--color-base-100)", border: "1px solid var(--color-accent)" }}>
+          <div className="stat-figure text-2xl">🍷</div>
+          <div className="stat-title text-xs tracking-wider uppercase" style={{ color: "#ffd966" }}>在售酒品</div>
+          <div className="stat-value text-3xl" style={{ color: "var(--color-accent)" }}>{displayListed}</div>
+        </div>
+        <div className="stat rounded-xl flex-1 min-w-[130px] shadow-lg" style={{ background: "var(--color-base-100)", border: "1px solid var(--color-accent)" }}>
+          <div className="stat-figure text-2xl">{isConnected ? "🟢" : "⚫"}</div>
+          <div className="stat-title text-xs tracking-wider uppercase" style={{ color: "#ffd966" }}>钱包</div>
+          <div className="stat-value text-sm font-mono truncate max-w-[130px]" style={{ color: "var(--color-accent)" }}>
+            {isConnected ? `${connectedAddress?.slice(0, 6)}...${connectedAddress?.slice(-4)}` : "未连接"}
+          </div>
+        </div>
+      </div>
+
+      {/* Feature Cards */}
+      <div className="grid grid-cols-1 md:grid-cols-3 gap-5 w-[92%] max-w-5xl mb-14">
+        <div className="card shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+          style={{ background: "var(--color-base-100)", border: "1px solid var(--color-accent)" }}>
+          <div className="card-body items-center text-center p-6">
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: "var(--color-secondary)" }}>
+              <span className="text-3xl">🎨</span>
+            </div>
+            <h3 className="card-title" style={{ color: "#ffd966" }}>发行酒藏</h3>
+            <p className="text-sm" style={{ color: "#b8ecec" }}>上传酒品图片，设定名称描述，一键发行为链上 NFT。</p>
+            <div className="card-actions mt-4">
+              <Link href="/creatNft" className="btn btn-sm" style={{ background: "var(--color-primary)", color: "var(--color-primary-content)" }}>开始发行</Link>
             </div>
           </div>
         </div>
 
-        <div className="grow bg-base-300 w-full mt-16 px-8 py-12">
-          <div className="flex justify-center items-center gap-12 flex-col md:flex-row">
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <BugAntIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Tinker with your smart contract using the{" "}
-                <Link href="/debug" passHref className="link">
-                  Debug Contracts
-                </Link>{" "}
-                tab.
-              </p>
+        <div className="card shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+          style={{ background: "var(--color-base-100)", border: "1px solid var(--color-accent)" }}>
+          <div className="card-body items-center text-center p-6">
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: "var(--color-secondary)" }}>
+              <span className="text-3xl">🏪</span>
             </div>
-            <div className="flex flex-col bg-base-100 px-10 py-10 text-center items-center max-w-xs rounded-3xl">
-              <MagnifyingGlassIcon className="h-8 w-8 fill-secondary" />
-              <p>
-                Explore your local transactions with the{" "}
-                <Link href="/blockexplorer" passHref className="link">
-                  Block Explorer
-                </Link>{" "}
-                tab.
-              </p>
+            <h3 className="card-title" style={{ color: "#ffd966" }}>上架交易</h3>
+            <p className="text-sm" style={{ color: "#b8ecec" }}>选择你的 NFT 酒品，设定价格，上架到吧台市场。</p>
+            <div className="card-actions mt-4">
+              <Link href="/ListNft" className="btn btn-sm" style={{ background: "var(--color-primary)", color: "var(--color-primary-content)" }}>上架酒品</Link>
+            </div>
+          </div>
+        </div>
+
+        <div className="card shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all duration-300"
+          style={{ background: "var(--color-base-100)", border: "1px solid var(--color-accent)" }}>
+          <div className="card-body items-center text-center p-6">
+            <div className="w-16 h-16 rounded-full flex items-center justify-center mb-4" style={{ background: "var(--color-secondary)" }}>
+              <span className="text-3xl">🥂</span>
+            </div>
+            <h3 className="card-title" style={{ color: "#ffd966" }}>品鉴收藏</h3>
+            <p className="text-sm" style={{ color: "#b8ecec" }}>浏览在售珍酿，支付 ETH 购买，丰富你的黑金酒藏。</p>
+            <div className="card-actions mt-4">
+              <Link href="/BuyNft" className="btn btn-sm" style={{ background: "var(--color-primary)", color: "var(--color-primary-content)" }}>前往吧台</Link>
             </div>
           </div>
         </div>
       </div>
-    </>
+
+      {/* My NFTs Quick Link */}
+      <div className="w-[92%] max-w-5xl mb-12">
+        <div className="card rounded-2xl shadow-lg" style={{ background: "var(--color-base-100)", border: "1px solid var(--color-accent)" }}>
+          <div className="card-body flex-row items-center justify-between p-6">
+            <div>
+              <h3 className="font-bold text-lg" style={{ color: "#ffd966" }}>🏷️ 我的酒藏</h3>
+              <p className="text-sm" style={{ color: "#b8ecec" }}>查看和管理你拥有的所有 NFT 酒品</p>
+            </div>
+            <Link href="/myNFTs" className="btn btn-sm" style={{ background: "var(--color-primary)", color: "var(--color-primary-content)" }}>查看</Link>
+          </div>
+        </div>
+      </div>
+
+      {/* Footer */}
+      <div className="text-center pb-8">
+        <div className="w-16 h-px mx-auto mb-3" style={{ background: "linear-gradient(to right, transparent, #ffd966, transparent)" }} />
+        <p className="text-xs tracking-[0.2em] uppercase" style={{ color: "#b8ecec" }}>BarFi · Vinothèque</p>
+      </div>
+    </div>
   );
 };
 

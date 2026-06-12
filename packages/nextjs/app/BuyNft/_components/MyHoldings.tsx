@@ -7,7 +7,6 @@ import { useScaffoldContract, useScaffoldReadContract } from "~~/hooks/scaffold-
 import { notification } from "~~/utils/scaffold-eth";
 import { getMetadataFromIPFS } from "~~/utils/tokenization/ipfs-fetch";
 import type { NFTMetaData } from "~~/utils/tokenization/nftsMetadata";
-import { formatEther } from "viem";
 
 const PAGE_SIZE = 3;
 
@@ -15,7 +14,7 @@ export interface Collectible extends Partial<NFTMetaData> {
   id: number;
   uri: string;
   owner: string;
-  price: string;
+  price: bigint;
   listed: boolean;
 }
 
@@ -35,24 +34,17 @@ export const MyHoldings = () => {
       if (myTotalBalance === undefined || yourCollectibleContract === undefined || connectedAddress === undefined) return;
       setAllCollectiblesLoading(true);
       const collectibleUpdate: Collectible[] = [];
-      const totalBalance = parseInt(myTotalBalance.toString());
-      for (let i = 0; i < totalBalance; i++) {
+      const Item = await yourCollectibleContract.read.getAllListedNfts();
+      for (let i = 0; i < Item.length; i++) {
         try {
-          const tokenId = await yourCollectibleContract.read.tokenOfOwnerByIndex([connectedAddress, BigInt(i)]);
-          const tokenURI = await yourCollectibleContract.read.tokenURI([tokenId]);
-          const ipfsHash = tokenURI.replace("https://jade-obedient-crane-756.mypinata.cloud/ipfs/", "")
-            .replace("https://gateway.pinata.cloud/ipfs/", "").replace("https://ipfs.io/ipfs/", "");
-          const nftMetadata: NFTMetaData = await getMetadataFromIPFS(ipfsHash);
-
-          let price = "0", listed = false;
-          try {
-            const nftItem = await yourCollectibleContract.read.getNftItem([tokenId]);
-            price = formatEther((nftItem as any).price as bigint);
-            listed = (nftItem as any).isListed as boolean;
-          } catch {}
-
-          collectibleUpdate.push({ id: parseInt(tokenId.toString()), uri: tokenURI, owner: connectedAddress, price, listed, ...nftMetadata });
-        } catch (e) { notification.error("获取失败"); setAllCollectiblesLoading(false); console.log(e); }
+          const tokenItem = await yourCollectibleContract.read.getNftItem([Item[i].tokenId]);
+          const tokenURI = await yourCollectibleContract.read.tokenURI([Item[i].tokenId]);
+          const nftMetadata: NFTMetaData = await getMetadataFromIPFS(tokenURI as string);
+          collectibleUpdate.push({
+            id: parseInt(Item[i].tokenId.toString()), uri: tokenURI as string, owner: connectedAddress,
+            price: tokenItem.price, listed: tokenItem.isListed, ...nftMetadata,
+          });
+        } catch (e) { notification.error("获取收藏品时出错"); setAllCollectiblesLoading(false); console.log(e); }
       }
       collectibleUpdate.sort((a, b) => a.id - b.id);
       setMyAllCollectibles(collectibleUpdate);
@@ -73,7 +65,7 @@ export const MyHoldings = () => {
   return (
     <>
       {myAllCollectibles.length === 0 ? (
-        <div className="text-center text-2xl text-base-content mt-10">暂无 NFT</div>
+        <div className="flex justify-center mt-10"><div className="text-2xl text-base-content">暂无在售 NFT</div></div>
       ) : (
         <>
           <div className="flex flex-wrap gap-5 justify-center">

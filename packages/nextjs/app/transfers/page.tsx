@@ -2,68 +2,49 @@
 
 import { Address } from "@scaffold-ui/components";
 import type { NextPage } from "next";
-import { hardhat } from "viem/chains";
 import { useScaffoldEventHistory } from "~~/hooks/scaffold-eth";
-import { useTargetNetwork } from "~~/hooks/scaffold-eth";
 
 const Transfers: NextPage = () => {
-  const { targetNetwork } = useTargetNetwork();
   const { data: transferEvents, isLoading } = useScaffoldEventHistory({
-    contractName: "YourCollectible",
-    eventName: "Transfer",
+    contractName: "YourCollectible", eventName: "Transfer",
   });
 
-  if (isLoading)
-    return (
-      <div className="flex justify-center items-center mt-10">
-        <span className="loading loading-spinner loading-xl"></span>
-      </div>
-    );
+  if (isLoading) return <div className="flex justify-center mt-10"><span className="loading loading-spinner loading-lg"></span></div>;
 
   return (
-    <>
-      <div className="flex items-center flex-col flex-grow pt-10">
-        <div className="px-5">
-          <h1 className="text-center mb-8">
-            <span className="block text-4xl font-bold">All Transfers Events</span>
+    <div className="flex items-center flex-col pt-10 px-4">
+      <div className="w-full max-w-4xl">
+        <div className="text-center mb-8">
+          <h1 className="text-4xl font-bold">
+            <span className="text-primary">🔄</span> 所有转账记录
           </h1>
         </div>
-        <div className="overflow-x-auto shadow-lg">
-          <table className="table table-zebra w-full">
+        <div className="overflow-x-auto rounded-2xl shadow-lg border border-accent/10">
+          <table className="table w-full">
             <thead>
-              <tr className="text-base-content">
-                <th className="bg-primary">Token Id</th>
-                <th className="bg-primary">From</th>
-                <th className="bg-primary">To</th>
+              <tr className="bg-base-300 text-base-content/80">
+                <th className="text-primary">Token ID</th>
+                <th className="text-primary">From</th>
+                <th className="text-primary">To</th>
               </tr>
             </thead>
             <tbody>
               {!transferEvents || transferEvents.length === 0 ? (
-                <tr>
-                  <td colSpan={3} className="text-center">
-                    No events found
-                  </td>
-                </tr>
+                <tr><td colSpan={3} className="text-center text-base-content py-8">暂无转账记录</td></tr>
               ) : (
-                transferEvents?.map((event, index) => {
-                  return (
-                    <tr key={index}>
-                      <th className="text-center">{event.args.tokenId?.toString()}</th>
-                      <td>
-                        <Address address={event.args.from} chain={targetNetwork} />
-                      </td>
-                      <td>
-                        <Address address={event.args.to} chain={targetNetwork} />
-                      </td>
-                    </tr>
-                  );
-                })
+                transferEvents.map((event, i) => (
+                  <tr key={i} className="hover:bg-base-200">
+                    <th className="text-center text-primary">{event.args.tokenId?.toString()}</th>
+                    <td><Address address={event.args.from} /></td>
+                    <td><Address address={event.args.to} /></td>
+                  </tr>
+                ))
               )}
             </tbody>
           </table>
         </div>
       </div>
-    </>
+    </div>
   );
 };
 
