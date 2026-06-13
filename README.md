@@ -1,5 +1,11 @@
 # Vinothèque（酒藏）— NFT 吧台平台
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](LICENCE)
+[![Scaffold-ETH 2](https://img.shields.io/badge/Built%20with-Scaffold--ETH%202-blue)](https://scaffoldeth.io)
+[![Zai Hackathon](https://img.shields.io/badge/Hackathon-Zai%20%7C%20GLM--5.1-8A2BE2)](https://z.ai)
+[![Next.js](https://img.shields.io/badge/Next.js-15-black)](https://nextjs.org)
+[![Solidity](https://img.shields.io/badge/Solidity-%5E0.8.20-363636)](https://soliditylang.org)
+
 > **Hackathon 赛道**: [Zai（z.ai）](https://z.ai) — 智谱 GLM-5.1 API
 > **开发框架**: Scaffold-ETH 2（Hardhat + Next.js 15 + DaisyUI 5 + TailwindCSS 4）
 
@@ -233,6 +239,48 @@ NEXT_PUBLIC_ALCHEMY_API_KEY=your_alchemy_key
 | 存储 | IPFS (Pinata) |
 | AI | GLM-5.1 (z.ai / 智谱) |
 | 钱包 | MetaMask / Burner Wallet |
+
+---
+
+## Demo 演示
+
+> 🎥 **演示视频**：（待拍摄 — 预计 3-5 分钟，覆盖发行→上架→购买→合约验证全流程）
+
+### 截图预览
+
+页面截图位于 `screenshots/` 目录（截图待补充）：
+
+| 页面 | 说明 |
+|------|------|
+| `screenshots/homepage.png` | 首页品牌展示 + 统计面板 |
+| `screenshots/createnft.png` | 发行页面 — 图片上传 + 链上铸造 |
+| `screenshots/market.png` | 吧台市场 — 在售列表 + 购买 |
+| `screenshots/mynfts.png` | 我的 NFT |
+| `screenshots/etherscan-contract.png` | Etherscan 合约验证 |
+
+---
+
+## 项目文档
+
+| 文档 | 说明 |
+|------|------|
+| [`PROPOSAL.md`](./PROPOSAL.md) | 项目说明文档：问题、解决方案、目标用户、技术实现、完成度与后续计划 |
+| [`EVIDENCE.md`](./EVIDENCE.md) | 链上/测试网证据：合约部署、交易哈希、测试账号、操作记录 |
+
+---
+
+## 团队信息
+
+| 成员 | 角色 | 钱包地址 | 联系方式 |
+|------|------|----------|----------|
+| G-H11 | 项目经理、全栈开发 | `0x49512a94686ff02e0db21a3ff5b6164b55dd0c56` | sdongfang27@gmail.com |
+
+**AI 开发工具**
+- 底模推理：智谱 GLM-5.1（通过 [z.ai](https://z.ai) 端点）
+- 代理框架：Hermes Agent CLI（Nous Research）
+- 开发框架：Scaffold-ETH 2（Speedrun Ethereum）
+
+> 项目全程由 AI 驱动开发。README 中"GLM-5.1 调用位置"章节记录了 AI 在智能合约扩展、前端翻新、IPFS 集成等方面的具体贡献。
 
 ---
 
